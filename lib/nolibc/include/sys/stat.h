@@ -50,7 +50,7 @@ struct stat {
 	struct timespec st_ctim;
 	long unused[3];
 };
-#else		/* ARM64 */ 
+#else		/* ARM64 */
 struct stat {
 	dev_t st_dev;
 	ino_t st_ino;
