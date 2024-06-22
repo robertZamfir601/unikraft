@@ -382,6 +382,45 @@ UK_LLSYSCALL_R_DEFINE(pid_t, set_tid_address, pid_t *, tid_ref)
 	return self_tid;
 }
 
+/**
+ * sys_set_robust_list() - Set the robust-futex list head of a task
+ * @head: 	pointer to the list-head (This is in __user space, but I can add macro)
+ * @len:		length of the list-head, as userspace expects
+ * NOTE: 	There is no libc wrapper
+ */
+UK_LLSYSCALL_R_DEFINE(long, set_robust_list, struct robust_list_head *, head,
+		size_t, len)
+{
+	struct uk_thread *current = uk_thread_current();
+
+	/*
+	 * The kernel knows only one size for now:
+	 */
+	if (unlikely(len != sizeof(*head)))
+		return -EINVAL;
+
+	current->robust_list = head;
+
+	return 0;
+}
+
+/**
+ * sys_get_robust_list() - Get the robust-futex list head of a task
+ * @pid:			pid of the process [zero for current task]
+ * @head_ptr:	pointer to a list-head pointer, the kernel fills it in (This is in __user __user space, but I can't add macro)
+ * @len_ptr:	pointer to a length field, the kernel fills in the header size (This is in __user space, but I can't add macro)
+ * NOTE: 		There is no libc wrapper
+ */
+UK_LLSYSCALL_R_DEFINE(long, get_robust_list, int, pid,
+		struct robust_list_head **, head_ptr,
+		size_t *, len_ptr)
+{
+	uk_pr_err("UNIMPLEMENTED: get_robust_list()\n");
+	// UK_CRASH("UNIMPLEMENTED: get_robust_list()\n");
+
+	return 0;	/* As prefera CRASH, ca ii dau pointer NULL si e naspa */
+}
+
 static void thread_exit_handler(struct uk_thread *child)
 {
 	struct uk_list_head *itr, *tmp;

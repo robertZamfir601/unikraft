@@ -41,6 +41,10 @@
 #include <uk/prio.h>
 #include <uk/essentials.h>
 
+#if CONFIG_LIBPOSIX_FUTEX
+#include <linux/futex.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -84,6 +88,10 @@ struct uk_thread {
 	__nsec exec_time;		/**< Time the thread was scheduled */
 	const char *name;		/**< Reference to thread name */
 	UK_TAILQ_ENTRY(struct uk_thread) thread_list;
+
+	#if CONFIG_LIBPOSIX_FUTEX
+	struct robust_list_head  *robust_list;	/* This pointer is in __user space, but I can't add macro */
+	#endif
 };
 
 UK_TAILQ_HEAD(uk_thread_list, struct uk_thread);
